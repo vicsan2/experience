@@ -6,6 +6,9 @@ module.exports = {
     "@remix-run/eslint-config/jest-testing-library",
     "prettier",
   ],
+  rules: {
+    semi: [2, "never"],
+  },
   env: {
     "cypress/globals": true,
   },
@@ -18,4 +21,4 @@ module.exports = {
       version: 28,
     },
   },
-};
+}

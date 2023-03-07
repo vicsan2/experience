@@ -7,15 +7,79 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum UserRole {
+  PROVIDER
+  CLIENT
+}
+
 model User {
-  id    String @id @default(cuid())
-  email String @unique
+  id                String    @id @unique @default(cuid())
+  username          String    @unique
+  previousUsernames String[]
+  email             String    @unique
+  lastActive        DateTime?
+  dateOfBirth       DateTime?
+  verified          Boolean   @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  password Password?
-  notes    Note[]
+  provider  Provider? @relation("provider")
+  client    Client?   @relation("client")
+  password  Password?
+  reviews   Review[]
+  blockList User[]    @relation("blockList")
+  blockedBy User[]    @relation("blockList")
+  userRole  UserRole
+
+  @@unique([id, username])
+}
+
+model Provider {
+  visible Boolean  @default(false)
+  status  String   @default("online")
+  service String[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  listing   Listing?
+  voiceNote VoiceNote[]
+  tags      Tag[]       @relation("providerTags")
+
+  user     User   @relation("provider", fields: [userId, username], references: [id, username], onDelete: Cascade, onUpdate: Cascade)
+  userId   String @id @unique
+  username String @unique
+
+  @@unique([userId, username])
+}
+
+model Client {
+  user   User   @relation("client", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @id @unique
+
+  tags Tag[] @relation("clientTags")
+}
+
+model Review {
+  id        String  @id @default(cuid())
+  rating    Int
+  comment   String?
+  voiceNote String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  provider User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId   String @unique
+}
+
+model Tag {
+  id  String @id @default(cuid())
+  tag String @unique
+
+  clients   Client[]   @relation("clientTags")
+  providers Provider[] @relation("providerTags")
 }
 
 model Password {
@@ -25,14 +89,36 @@ model Password {
   userId String @unique
 }
 
-model Note {
-  id    String @id @default(cuid())
-  title String
-  body  String
+model Listing {
+  id        String   @id @default(cuid())
+  name      String
+  age       Int
+  gender    String
+  pronouns  String[]
+  photos    String[]
+  location  String
+  ethnicity String?
+  hairColor String?
+  eyeColor  String?
+  height    String?
+  bodyType  String?
+  shoeSize  String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  provider   Provider @relation(fields: [providerId, username], references: [userId, username], onDelete: Cascade, onUpdate: Cascade)
+  providerId String   @unique
+  username   String   @unique
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String
+  voiceNote   VoiceNote? @relation(fields: [voiceNoteUrl], references: [url], onDelete: Cascade, onUpdate: Cascade)
+  voiceNoteUrl String?    @unique
+
+  @@unique([providerId, username])
+}
+
+model VoiceNote {
+  id  String @id @default(cuid())
+  url String @unique
+
+  provider   Provider @relation(fields: [providerId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
+  providerId String   @unique
+  Listing    Listing?
 }

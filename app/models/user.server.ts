@@ -1,62 +1,100 @@
-import type { Password, User } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import type { Password, User } from "@prisma/client"
+import bcrypt from "bcryptjs"
 
-import { prisma } from "~/db.server";
+import { prisma } from "~/db.server"
 
-export type { User } from "@prisma/client";
+export type { User } from "@prisma/client"
 
 export async function getUserById(id: User["id"]) {
-  return prisma.user.findUnique({ where: { id } });
+  return prisma.user.findUnique({ where: { id } })
 }
 
-export async function getUserByEmail(email: User["email"]) {
-  return prisma.user.findUnique({ where: { email } });
+export async function getUserByUserName(username: User["username"]) {
+  return prisma.user.findUnique({ where: { username } })
 }
 
-export async function createUser(email: User["email"], password: string) {
-  const hashedPassword = await bcrypt.hash(password, 10);
+export async function createClient(
+  username: User["username"],
+  password: string,
+  email: User["email"],
+  dateOfBirth: User["dateOfBirth"]
+) {
+  const hashedPassword = await bcrypt.hash(password, 10)
 
-  return prisma.user.create({
+  return prisma.client.create({
     data: {
-      email,
-      password: {
+      user: {
         create: {
-          hash: hashedPassword,
+          username,
+          email,
+          lastActive: new Date(),
+          dateOfBirth: dateOfBirth,
+          password: {
+            create: {
+              hash: hashedPassword,
+            },
+          },
+          userRole: "CLIENT",
         },
       },
     },
-  });
+  })
 }
 
-export async function deleteUserByEmail(email: User["email"]) {
-  return prisma.user.delete({ where: { email } });
+export async function createProvider(
+  username: User["username"],
+  password: string,
+  email: User["email"],
+  dateOfBirth: User["dateOfBirth"]
+) {
+  const hashedPassword = await bcrypt.hash(password, 10)
+
+  return prisma.provider.create({
+    data: {
+      user: {
+        create: {
+          username,
+          email,
+          lastActive: new Date(),
+          dateOfBirth: dateOfBirth,
+          password: {
+            create: {
+              hash: hashedPassword,
+            },
+          },
+          userRole: "PROVIDER",
+        },
+      },
+    },
+  })
+}
+
+export async function deleteUserByUserName(username: User["username"]) {
+  return prisma.user.delete({ where: { username } })
 }
 
 export async function verifyLogin(
-  email: User["email"],
+  username: User["username"],
   password: Password["hash"]
 ) {
   const userWithPassword = await prisma.user.findUnique({
-    where: { email },
+    where: { username },
     include: {
       password: true,
     },
-  });
+  })
 
   if (!userWithPassword || !userWithPassword.password) {
-    return null;
+    return null
   }
 
-  const isValid = await bcrypt.compare(
-    password,
-    userWithPassword.password.hash
-  );
+  const isValid = await bcrypt.compare(password, userWithPassword.password.hash)
 
   if (!isValid) {
-    return null;
+    return null
   }
 
-  const { password: _password, ...userWithoutPassword } = userWithPassword;
+  const { password: _password, ...userWithoutPassword } = userWithPassword
 
-  return userWithoutPassword;
+  return userWithoutPassword
 }

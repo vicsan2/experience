@@ -1,53 +1,110 @@
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { PrismaClient } from "@prisma/client"
+import bcrypt from "bcryptjs"
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function seed() {
-  const email = "rachel@remix.run";
-
+  const username1 = "vicsan"
+  const username2 = "vicsan2"
+  const tagTag = "LGBTQ+"
   // cleanup the existing database
-  await prisma.user.delete({ where: { email } }).catch(() => {
-    // no worries if it doesn't exist yet
-  });
+  await prisma.user.delete({ where: { username: username1 } }).catch(() => {})
+  await prisma.user.delete({ where: { username: username2 } }).catch(() => {})
+  await prisma.tag.delete({ where: { tag: tagTag } }).catch(() => {})
+  await prisma.listing
+    .delete({ where: { username: username2 } })
+    .catch(() => {})
+  await prisma.voiceNote
+    .delete({
+      where: {
+        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      },
+    })
+    .catch(() => {})
 
-  const hashedPassword = await bcrypt.hash("racheliscool", 10);
+  const hashedPassword = await bcrypt.hash("password", 10)
 
-  const user = await prisma.user.create({
+  const tag = await prisma.tag.create({
     data: {
-      email,
-      password: {
+      tag: tagTag,
+    },
+  })
+
+  await prisma.client.create({
+    data: {
+      user: {
         create: {
-          hash: hashedPassword,
+          username: username1,
+          email: "test2@gmail.com",
+          lastActive: new Date(),
+          dateOfBirth: new Date(1995, 1, 1),
+          password: {
+            create: {
+              hash: hashedPassword,
+            },
+          },
+          userRole: "CLIENT",
+        },
+      },
+      tags: {
+        connect: {
+          id: tag.id,
         },
       },
     },
-  });
+  })
 
-  await prisma.note.create({
+  const provider = await prisma.provider.create({
     data: {
-      title: "My first note",
-      body: "Hello, world!",
-      userId: user.id,
+      user: {
+        create: {
+          username: username2,
+          email: "test@gmail.com",
+          lastActive: new Date(),
+          dateOfBirth: new Date(1995, 1, 1),
+          password: {
+            create: {
+              hash: hashedPassword,
+            },
+          },
+          userRole: "PROVIDER",
+        },
+      },
+      tags: {
+        connect: {
+          id: tag.id,
+        },
+      },
     },
-  });
+  })
 
-  await prisma.note.create({
+  const voiceNote = await prisma.voiceNote.create({
     data: {
-      title: "My second note",
-      body: "Hello, world!",
-      userId: user.id,
+      providerId: provider.userId,
+      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     },
-  });
+  })
 
-  console.log(`Database has been seeded. 🌱`);
+  await prisma.listing.create({
+    data: {
+      name: "Victor",
+      age: 26,
+      gender: "Male",
+      location: "Shreveport, LA",
+      providerId: provider.userId,
+      username: provider.username,
+      voiceNoteUrl: voiceNote.url,
+    },
+  })
+
+  console.log(`Database has been seeded. 🌱`)
 }
 
 seed()
   .catch((e) => {
-    console.error(e);
-    process.exit(1);
+    console.error(e)
+    process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect();
-  });
+    await prisma.$disconnect()
+  })
