@@ -30,10 +30,11 @@ function getClient() {
 
   const PRIMARY_REGION = isLocalHost ? null : process.env.PRIMARY_REGION
   const FLY_REGION = isLocalHost ? null : process.env.FLY_REGION
+  const PUBLIC_DB = isLocalHost ? null : process.env.PUBLIC_DB
 
-  const isReadReplicaRegion = !PRIMARY_REGION || PRIMARY_REGION === FLY_REGION
+  const isReadReplicaRegion = process.env.FLY_REGION && !PRIMARY_REGION || PRIMARY_REGION === FLY_REGION
 
-  if (!isLocalHost) {
+  if (!isLocalHost && !PUBLIC_DB) {
     databaseUrl.host = `${FLY_REGION}.${databaseUrl.host}`
     if (!isReadReplicaRegion) {
       // 5433 is the read-replica port
