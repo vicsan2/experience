@@ -121,14 +121,6 @@ async function seed() {
     const photoIds = [randomInt(400), randomInt(400), randomInt(400)]
 
     if (i === 0) {
-      const voiceNote = await prisma.voiceNote.create({
-        data: {
-          providerId: provider.userId,
-          url: "https://cdn.videvo.net/videvo_files/audio/premium/audio0160/watermarked/SexMoanFemaleLong_preview.mp3",
-          username: provider.username,
-        },
-      })
-
       await prisma.listing.create({
         data: {
           name: name,
