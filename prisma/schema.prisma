@@ -18,7 +18,7 @@ model User {
   previousUsernames String[]
   email             String    @unique
   lastActive        DateTime?
-  dateOfBirth       DateTime?
+  dateOfBirth       String?
   verified          Boolean   @default(false)
 
   createdAt DateTime @default(now())
@@ -72,6 +72,9 @@ model Review {
 
   provider User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId   String @unique
+
+  listing   Listing? @relation(fields: [listingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  listingId String   @unique
 }
 
 model Tag {
@@ -90,25 +93,26 @@ model Password {
 }
 
 model Listing {
-  id        String   @id @default(cuid())
-  name      String
-  age       Int
-  gender    String
-  pronouns  String[]
-  photos    String[]
-  location  String
-  ethnicity String?
-  hairColor String?
-  eyeColor  String?
-  height    String?
-  bodyType  String?
-  shoeSize  String?
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  age         Int
+  gender      String
+  pronouns    String[]
+  photos      String[]
+  thumbnails  String[]
+  language    String[]
+  location    String
+  rating      Float    @default(0)
 
   provider   Provider @relation(fields: [providerId, username], references: [userId, username], onDelete: Cascade, onUpdate: Cascade)
   providerId String   @unique
   username   String   @unique
 
-  voiceNote   VoiceNote? @relation(fields: [voiceNoteUrl], references: [url], onDelete: Cascade, onUpdate: Cascade)
+  reviews      Review[]
+  reviewsCount Int      @default(0)
+
+  voiceNote    VoiceNote? @relation(fields: [voiceNoteUrl], references: [url], onDelete: Cascade, onUpdate: Cascade)
   voiceNoteUrl String?    @unique
 
   @@unique([providerId, username])
@@ -118,7 +122,11 @@ model VoiceNote {
   id  String @id @default(cuid())
   url String @unique
 
-  provider   Provider @relation(fields: [providerId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
+  provider   Provider @relation(fields: [providerId, username], references: [userId, username], onDelete: Cascade, onUpdate: Cascade)
   providerId String   @unique
-  Listing    Listing?
+  username   String   @unique
+
+  Listing Listing?
+
+  @@unique([providerId, username])
 }

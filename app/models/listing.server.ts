@@ -12,3 +12,25 @@ export async function getListingByUsername(username: Listing["username"]) {
     where: { username },
   })
 }
+
+export async function editListingByUsername(
+  username: Listing["username"],
+  data: Listing
+) {
+  return prisma.listing.update({
+    where: { username },
+    data,
+  })
+}
+
+export async function deleteListingByUsername(username: Listing["username"]) {
+  return prisma.listing.delete({
+    where: { username },
+  })
+}
+
+export async function getListings() {
+  return prisma.listing.findMany({
+    take: 15,
+  })
+}
