@@ -2,6 +2,7 @@ import type { LinksFunction, LoaderArgs, MetaFunction } from "@remix-run/node"
 import { json } from "@remix-run/node"
 import {
   Form,
+  Link,
   Links,
   LiveReload,
   Meta,
@@ -9,7 +10,6 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLocation,
 } from "@remix-run/react"
 import { Avatar, Button, Dropdown, Flowbite, Navbar } from "flowbite-react"
 
@@ -40,7 +40,6 @@ export async function loader({ request }: LoaderArgs) {
 
 export default function App() {
   const user = useOptionalUser()
-  const { pathname } = useLocation()
   return (
     <html lang="en" className="h-full overflow-x-hidden">
       <head>
@@ -51,16 +50,18 @@ export default function App() {
         {typeof window !== "undefined" ? (
           <Flowbite theme={{ theme }}>
             <Navbar fluid className="z-50">
-              <Navbar.Brand href="/">
-                <img
-                  src="https://flowbite.com/docs/images/logo.svg"
-                  className="mr-3 h-6 sm:h-9"
-                  alt="Flowbite Logo"
-                />
-                <span className="self-center whitespace-nowrap text-xl font-semibold">
-                  Experience
-                </span>
-              </Navbar.Brand>
+              <Link to="/" prefetch="intent">
+                <Navbar.Brand>
+                  <img
+                    src="https://flowbite.com/docs/images/logo.svg"
+                    className="mr-3 h-6 sm:h-9"
+                    alt="Flowbite Logo"
+                  />
+                  <span className="self-center whitespace-nowrap text-xl font-semibold">
+                    Experience
+                  </span>
+                </Navbar.Brand>
+              </Link>
               <div className="flex gap-2 md:order-2">
                 {user ? (
                   <Dropdown
@@ -77,16 +78,12 @@ export default function App() {
                   </Dropdown>
                 ) : (
                   <>
-                    {!pathname.startsWith("/login") && (
-                      <NavLink to="/login">
-                        <Button>Login</Button>
-                      </NavLink>
-                    )}
-                    {!pathname.startsWith("/signup") && (
-                      <NavLink to="/signup">
-                        <Button>Sign Up</Button>
-                      </NavLink>
-                    )}
+                    <NavLink to="login" prefetch="intent">
+                      {({ isActive }) => !isActive && <Button>Login</Button>}
+                    </NavLink>
+                    <NavLink to="signup" prefetch="intent">
+                      {({ isActive }) => !isActive && <Button>Sign Up</Button>}
+                    </NavLink>
                   </>
                 )}
                 <Navbar.Toggle />

@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcryptjs"
 import { faker } from "@faker-js/faker"
 import { randomInt } from "crypto"
+import { censorUsername } from "~/helpers/server"
 
 const prisma = new PrismaClient()
 
@@ -89,22 +90,53 @@ async function seed() {
       providerId: provider.userId,
       username: provider.username,
       voiceNoteUrl: voiceNote.url,
-      rating: 4,
-      reviewsCount: 1,
     },
   })
 
+  const users = []
+
   for (let i = 0; i < 20; i++) {
-    const userName = faker.internet.userName()
-    const email = faker.internet.email()
+    const clientUsername = faker.internet.userName()
+    const clientEmail = faker.internet.email()
+
+    const client = await prisma.client.create({
+      data: {
+        user: {
+          create: {
+            username: clientUsername,
+            email: clientEmail,
+            lastActive: new Date(),
+            dateOfBirth: "1995-01-01",
+            password: {
+              create: {
+                hash: hashedPassword,
+              },
+            },
+            userRole: "CLIENT",
+          },
+        },
+        tags: {
+          connect: {
+            id: tag.id,
+          },
+        },
+      },
+    })
+
+    users.push(client)
+  }
+
+  for (let i = 0; i < 20; i++) {
+    const providerUsername = faker.internet.userName()
+    const providerEmail = faker.internet.email()
     const name = faker.name.fullName()
 
     const provider = await prisma.provider.create({
       data: {
         user: {
           create: {
-            username: userName,
-            email: email,
+            username: providerUsername,
+            email: providerEmail,
             lastActive: new Date(),
             dateOfBirth: "1995-01-01",
             password: {
@@ -139,9 +171,7 @@ async function seed() {
           location: `${faker.address.city()}, ${faker.address.stateAbbr()}, ${faker.address.countryCode()}`,
           providerId: provider.userId,
           username: provider.username,
-          rating: faker.datatype.float({ min: 0, max: 5 }),
           voiceNoteUrl: voiceNote.url,
-          reviewsCount: faker.datatype.number({ min: 0, max: 100 }),
           photos: photoIds.map((id) => `https://picsum.photos/id/${id}/1000`),
           thumbnails: photoIds.map(
             (id) => `https://picsum.photos/id/${id}/200`
@@ -151,7 +181,7 @@ async function seed() {
       continue
     }
 
-    await prisma.listing.create({
+    const listing = await prisma.listing.create({
       data: {
         name: name,
         description: faker.random.words(4),
@@ -161,12 +191,25 @@ async function seed() {
         location: `${faker.address.city()}, ${faker.address.stateAbbr()}, ${faker.address.countryCode()}`,
         providerId: provider.userId,
         username: provider.username,
-        rating: faker.datatype.float({ min: 0, max: 5 }),
-        reviewsCount: faker.datatype.number({ min: 0, max: 100 }),
         photos: photoIds.map((id) => `https://picsum.photos/id/${id}/1000`),
         thumbnails: photoIds.map((id) => `https://picsum.photos/id/${id}/200`),
       },
     })
+
+    for (let i = 0; i < randomInt(5, 20); i++) {
+      await prisma.review.create({
+        data: {
+          rating: faker.datatype.number({ min: 1, max: 5 }),
+          listingId: listing.id,
+          providerId: provider.userId,
+          providerUsername: provider.username,
+          reviewerId: users[i].userId,
+          reviewerUsername: users[i].username,
+          censoredReviewerUsername: censorUsername(users[i].username),
+          comment: faker.random.words(randomInt(5, 15)),
+        },
+      })
+    }
   }
 
   console.log(`Database has been seeded. 🌱`)

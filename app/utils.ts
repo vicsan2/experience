@@ -1,7 +1,9 @@
 import { useMatches } from "@remix-run/react"
 import { useMemo } from "react"
+import type { loader as rootLoader } from "./root"
 
 import type { User } from "~/models/user.server"
+import type { AppData, SerializeFrom } from "@remix-run/server-runtime"
 
 const DEFAULT_REDIRECT = "/"
 
@@ -33,9 +35,7 @@ export function safeRedirect(
  * @param {string} id The route id
  * @returns {JSON|undefined} The router data or undefined if not found
  */
-export function useMatchesData(
-  id: string
-): Record<string, unknown> | undefined {
+export function useMatchesData<T = AppData>(id: string): SerializeFrom<T> {
   const matchingRoutes = useMatches()
   const route = useMemo(
     () => matchingRoutes.find((route) => route.id === id),
@@ -49,7 +49,7 @@ function isUser(user: any): user is User {
 }
 
 export function useOptionalUser(): User | undefined {
-  const data = useMatchesData("root")
+  const data = useMatchesData<typeof rootLoader>("root")
   if (!data || !isUser(data.user)) {
     return undefined
   }

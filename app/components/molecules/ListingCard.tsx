@@ -5,7 +5,12 @@ import { useAudio } from "react-use"
 import Carousel from "./Carousel"
 
 interface ListingCardProps {
-  listing: Listing
+  listing: Listing & {
+    _count: {
+      reviews: number
+    }
+    avg: number
+  }
   onClick?: () => void
   onPlay?: () => void
   playing?: boolean
@@ -15,11 +20,11 @@ export default function ListingCard({
   listing: {
     username,
     description,
-    rating,
-    reviewsCount,
+    _count: { reviews: reviewsCount },
     voiceNoteUrl,
     thumbnails,
     location,
+    avg,
   },
   onClick,
   onPlay,
@@ -85,7 +90,7 @@ export default function ListingCard({
             <Rating>
               <Rating.Star />
               <p className="ml-2 font-bold text-gray-900 dark:text-white">
-                {rating.toFixed(2)}
+                {avg.toFixed(2)}
               </p>
               <span className="mx-1.5 h-1 w-1 rounded-full bg-gray-500 dark:bg-gray-400" />
               <span>({reviewsCount ?? "?"})</span>

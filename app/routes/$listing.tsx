@@ -1,4 +1,4 @@
-import { useLoaderData } from "@remix-run/react"
+import { Outlet, useLoaderData } from "@remix-run/react"
 import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/server-runtime"
 import { redirect } from "@remix-run/server-runtime"
@@ -9,25 +9,29 @@ import { getListingByUsername } from "~/models/listing.server"
 export async function loader({ params }: LoaderArgs) {
   const { listing: providerUsername } = params
   if (!providerUsername) return redirect("/")
-  const listing = await getListingByUsername(providerUsername)
+  const { listing, reviews } = await getListingByUsername(providerUsername)
   if (!listing) return redirect("/")
   const { name: _name, ...listingWithoutName } = listing
-  return json(listingWithoutName)
+  const listingWithReviews = {
+    ...listingWithoutName,
+    ...reviews,
+  }
+  return json(listingWithReviews)
 }
 
 export default function Listing() {
   const {
     username,
-    rating,
-    reviewsCount,
+    _count: { rating: ratingCount },
+    _avg: { rating: ratingAvg },
     location,
     photos,
     pronouns,
     language,
   } = useLoaderData<typeof loader>()
   return (
-    <section className="space-y-6">
-      <div className="space-y-1">
+    <div className="space-y-6">
+      <section className="space-y-1">
         <h1>
           {username} <span className="text-lg">({pronouns.join("/")})</span>
         </h1>
@@ -35,16 +39,16 @@ export default function Listing() {
           <Rating>
             <Rating.Star />
             <p className="ml-2 font-bold text-gray-900 dark:text-white">
-              {rating.toFixed(2)}
+              {ratingAvg?.toFixed(2)}
             </p>
-            <span className="ml-2">({reviewsCount ?? "?"})</span>
+            <span className="ml-2">({ratingCount ?? "?"})</span>
             <span className="mx-2 h-1 w-1 rounded-full bg-gray-500 dark:bg-gray-400" />
           </Rating>
           <strong>{location}</strong>
           <span>{language.join()}</span>
         </div>
-      </div>
-      <div className="mx-auto h-[450px] overflow-hidden rounded-md">
+      </section>
+      <section className="mx-auto h-[450px] overflow-hidden rounded-md">
         <Carousel
           photos={photos}
           slide={false}
@@ -55,7 +59,17 @@ export default function Listing() {
             },
           }}
         />
-      </div>
-    </section>
+      </section>
+      <section className="rounded-md bg-gray-700 p-6">
+        <Rating className="font-bold text-gray-900 dark:text-white">
+          <Rating.Star />
+          <p className="ml-2">{ratingAvg?.toFixed(2)}</p>
+          <span className="mx-2 h-1 w-1 rounded-full bg-gray-500 dark:bg-gray-400" />
+          <p>{ratingCount} Reviews</p>
+        </Rating>
+        <hr className="mt-3 mb-3 bg-gray-600" />
+        <Outlet />
+      </section>
+    </div>
   )
 }

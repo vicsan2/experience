@@ -27,7 +27,6 @@ model User {
   provider  Provider? @relation("provider")
   client    Client?   @relation("client")
   password  Password?
-  reviews   Review[]
   blockList User[]    @relation("blockList")
   blockedBy User[]    @relation("blockList")
   userRole  UserRole
@@ -47,18 +46,23 @@ model Provider {
   voiceNote VoiceNote[]
   tags      Tag[]       @relation("providerTags")
 
-  user     User   @relation("provider", fields: [userId, username], references: [id, username], onDelete: Cascade, onUpdate: Cascade)
-  userId   String @id @unique
-  username String @unique
+  user     User     @relation("provider", fields: [userId, username], references: [id, username], onDelete: Cascade, onUpdate: Cascade)
+  userId   String   @id @unique
+  username String   @unique
+  Review   Review[]
 
   @@unique([userId, username])
 }
 
 model Client {
-  user   User   @relation("client", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String @id @unique
+  user     User   @relation("client", fields: [userId, username], references: [id, username], onDelete: Cascade, onUpdate: Cascade)
+  userId   String @id @unique
+  username String @unique
 
-  tags Tag[] @relation("clientTags")
+  tags    Tag[]    @relation("clientTags")
+  reviews Review[]
+
+  @@unique([userId, username])
 }
 
 model Review {
@@ -70,11 +74,17 @@ model Review {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  provider User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId   String @unique
+  provider         Provider @relation(fields: [providerId, providerUsername], references: [userId, username], onDelete: Cascade, onUpdate: Cascade)
+  providerId       String
+  providerUsername String
 
-  listing   Listing? @relation(fields: [listingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  listingId String   @unique
+  reviewer                 Client @relation(fields: [reviewerId, reviewerUsername], references: [userId, username], onDelete: Cascade, onUpdate: Cascade)
+  reviewerId               String
+  reviewerUsername         String
+  censoredReviewerUsername String
+
+  listing   Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  listingId String?
 }
 
 model Tag {
@@ -103,19 +113,18 @@ model Listing {
   thumbnails  String[]
   language    String[]
   location    String
-  rating      Float    @default(0)
 
   provider   Provider @relation(fields: [providerId, username], references: [userId, username], onDelete: Cascade, onUpdate: Cascade)
   providerId String   @unique
   username   String   @unique
 
-  reviews      Review[]
-  reviewsCount Int      @default(0)
+  reviews     Review[]
 
   voiceNote    VoiceNote? @relation(fields: [voiceNoteUrl], references: [url], onDelete: Cascade, onUpdate: Cascade)
   voiceNoteUrl String?    @unique
 
   @@unique([providerId, username])
+  @@unique([id, providerId])
 }
 
 model VoiceNote {
