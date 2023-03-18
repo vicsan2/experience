@@ -62,7 +62,7 @@ export default function Reviews() {
         <Pagination
           currentPage={currentPage}
           onPageChange={handlePageChange}
-          totalPages={Math.floor(ratingCount / 4) + 1}
+          totalPages={Math.ceil(ratingCount / 4)}
           showIcons
         />
       </div>
