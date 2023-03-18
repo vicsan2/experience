@@ -1,8 +1,8 @@
 import type { Listing } from "@prisma/client"
-import { Card, Rating, Tooltip } from "flowbite-react"
-import { PauseIcon, PlayIcon, UserIcon } from "@heroicons/react/24/solid"
-import { useAudio } from "react-use"
+import { Card, Rating } from "flowbite-react"
+import { UserIcon } from "@heroicons/react/24/solid"
 import Carousel from "./Carousel"
+import VoiceNote from "./VoiceNote"
 
 interface ListingCardProps {
   listing: Listing & {
@@ -30,19 +30,6 @@ export default function ListingCard({
   onPlay,
   playing,
 }: ListingCardProps) {
-  const [audio, state, controls] = useAudio({
-    src: voiceNoteUrl ?? "",
-    autoPlay: false,
-  })
-
-  if (playing) {
-    controls.play()
-  }
-
-  if (!playing && state.playing) {
-    controls.pause()
-  }
-
   return (
     <div className="max-w-[204px] select-none" onClick={onClick}>
       <Card className="cursor-pointer">
@@ -64,26 +51,11 @@ export default function ListingCard({
         <div className="relative m-3 space-y-1">
           {voiceNoteUrl && (
             <div className="absolute right-0">
-              <Tooltip
-                content={state.playing ? "Pause audio" : "Play audio"}
-                arrow={false}
-                placement="top"
-              >
-                <button
-                  onClick={(event) => {
-                    event.stopPropagation()
-                    onPlay?.()
-                  }}
-                  className="rounded-full bg-gray-100 p-3"
-                >
-                  {state.playing ? (
-                    <PauseIcon className="h-6 w-6 text-blue-100" />
-                  ) : (
-                    <PlayIcon className="h-6 w-6 text-blue-100" />
-                  )}
-                  {audio}
-                </button>
-              </Tooltip>
+              <VoiceNote
+                voiceNoteUrl={voiceNoteUrl}
+                onPlay={onPlay}
+                playing={playing}
+              />
             </div>
           )}
           <div className="flex text-sm">

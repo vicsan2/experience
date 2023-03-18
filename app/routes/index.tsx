@@ -31,9 +31,9 @@ export default function Index() {
         <ListingCard
           key={listing.id}
           listing={listing}
-          onClick={() => navigate(`/${listing.username}`)}
+          onClick={() => navigate(`/${listing.username}?page=1`)}
           onPlay={() => handlePlay(i)}
-          playing={playing === i ? true : undefined}
+          playing={playing === i ? true : false}
         />
       ))}
     </section>

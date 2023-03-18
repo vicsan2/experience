@@ -3,7 +3,7 @@ import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/server-runtime"
 import { redirect } from "@remix-run/server-runtime"
 import { Rating } from "flowbite-react"
-import { Carousel } from "~/components"
+import { Carousel, VoiceNote } from "~/components"
 import { getListingByUsername } from "~/models/listing.server"
 
 export async function loader({ params }: LoaderArgs) {
@@ -28,25 +28,31 @@ export default function Listing() {
     photos,
     pronouns,
     language,
+    voiceNoteUrl,
   } = useLoaderData<typeof loader>()
   return (
     <div className="space-y-6">
-      <section className="space-y-1">
-        <h1>
-          {username} <span className="text-lg">({pronouns.join("/")})</span>
-        </h1>
-        <div className="flex space-y-1 text-sm">
-          <Rating>
-            <Rating.Star />
-            <p className="ml-2 font-bold text-gray-900 dark:text-white">
-              {ratingAvg?.toFixed(2)}
-            </p>
-            <span className="ml-2">({ratingCount ?? "?"})</span>
-            <span className="mx-2 h-1 w-1 rounded-full bg-gray-500 dark:bg-gray-400" />
-          </Rating>
-          <strong>{location}</strong>
-          <span>{language.join()}</span>
+      <section className="flex flex-row space-x-3 space-y-1">
+        <div>
+          <h1>
+            {username} <span className="text-lg">({pronouns.join("/")})</span>
+          </h1>
+          <div className="flex space-y-1 text-sm">
+            <Rating>
+              <Rating.Star />
+              <p className="ml-2 font-bold text-gray-900 dark:text-white">
+                {ratingAvg?.toFixed(2)}
+              </p>
+              <span className="ml-2">({ratingCount ?? "?"})</span>
+              <span className="mx-2 h-1 w-1 rounded-full bg-gray-500 dark:bg-gray-400" />
+            </Rating>
+            <strong>{location}</strong>
+            <span>{language.join()}</span>
+          </div>
         </div>
+        {voiceNoteUrl && (
+          <VoiceNote voiceNoteUrl={voiceNoteUrl} placement="right" />
+        )}
       </section>
       <section className="mx-auto h-[450px] overflow-hidden rounded-md">
         <Carousel
