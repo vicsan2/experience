@@ -40,7 +40,13 @@ export default function Reviews() {
             <Avatar rounded />
             <div className="flex flex-col space-y-3">
               <div className="flex flex-col">
-                <h2>{review.censoredReviewerUsername}</h2>
+                <div className="flex flex-row gap-2 items-center">
+                  <h2>{review.censoredReviewerUsername}</h2>
+                  <Rating>
+                    <Rating.Star />
+                    <p className="ml-2 font-bold">{review.rating}</p>
+                  </Rating>
+                </div>
                 <span className="text-sm font-semibold text-gray-300">
                   {readableDate(new Date(review.createdAt))}
                 </span>
@@ -48,23 +54,21 @@ export default function Reviews() {
               <div>
                 <p>{review.comment}</p>
               </div>
-              <div>
-                <Rating>
-                  <Rating.Star />
-                  <p className="ml-2 font-bold">{review.rating}</p>
-                </Rating>
-              </div>
             </div>
           </div>
         </div>
       ))}
       <div className="flex items-center justify-center pt-3 text-center">
-        <Pagination
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-          totalPages={Math.ceil(ratingCount / 4)}
-          showIcons
-        />
+        {reviews.length ? (
+          <Pagination
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            totalPages={Math.ceil(ratingCount / 4)}
+            showIcons
+          />
+        ) : (
+          <div className="py-6 w-full">No reviews yet</div>
+        )}
       </div>
     </div>
   )

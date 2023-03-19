@@ -8,9 +8,7 @@ export async function getListingByProviderId(userId: Provider["userId"]) {
   })
 }
 
-export async function getListingByUsername(
-  username: Listing["username"],
-) {
+export async function getListingByUsername(username: Listing["username"]) {
   const reviews = await getAggregatedReviewsByUsername(username)
   const listing = await prisma.listing.findUnique({
     where: { username },
@@ -47,6 +45,11 @@ export async function getListings() {
       reviews: {
         select: {
           rating: true,
+        },
+      },
+      provider: {
+        select: {
+          status: true,
         },
       },
     },

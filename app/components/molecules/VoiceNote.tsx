@@ -1,17 +1,22 @@
 import { PauseIcon, PlayIcon } from "@heroicons/react/24/solid"
+import type { ClassValue } from "clsx"
+import { clsx } from "clsx"
 import type { TooltipProps } from "flowbite-react"
 import { Tooltip } from "flowbite-react"
 import { useAudio } from "react-use"
+import { clsxInput } from "~/helpers/components"
 
 interface VoiceNoteProps {
   voiceNoteUrl: string
   onPlay?: () => void
   placement?: TooltipProps["placement"]
   playing?: boolean
+  className?: ClassValue | ClassValue[]
 }
 
 export default function VoiceNote({
   voiceNoteUrl,
+  className,
   onPlay,
   placement,
   playing,
@@ -46,12 +51,15 @@ export default function VoiceNote({
           if (onPlay) onPlay?.()
           else togglePlay()
         }}
-        className="rounded-full bg-gray-100 p-3"
+        className={clsx(
+          "rounded-bl-xl w-12 bg-gray-100 p-2",
+          ...clsxInput(className)
+        )}
       >
         {state.playing ? (
-          <PauseIcon className="h-6 w-6 text-blue-100" />
+          <PauseIcon className="h-5 w-5 mx-auto text-blue-100" />
         ) : (
-          <PlayIcon className="h-6 w-6 text-blue-100" />
+          <PlayIcon className="h-5 w-5 mx-auto text-blue-100" />
         )}
         {audio}
       </button>

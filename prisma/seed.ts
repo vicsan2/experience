@@ -24,7 +24,7 @@ async function seed() {
     },
   })
 
-  await prisma.client.create({
+  prisma.client.create({
     data: {
       user: {
         create: {
@@ -80,7 +80,7 @@ async function seed() {
     },
   })
 
-  await prisma.listing.create({
+  prisma.listing.create({
     data: {
       name: "Victor",
       description: "I am a cool guy",
@@ -161,7 +161,7 @@ async function seed() {
         },
       })
 
-      await prisma.listing.create({
+      prisma.listing.create({
         data: {
           name: name,
           description: faker.random.words(4),
@@ -197,7 +197,7 @@ async function seed() {
     })
 
     for (let i = 0; i < randomInt(5, 20); i++) {
-      await prisma.review.create({
+      prisma.review.create({
         data: {
           rating: faker.datatype.number({ min: 1, max: 5 }),
           listingId: listing.id,

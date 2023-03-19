@@ -1,16 +1,13 @@
-import type { Listing } from "@prisma/client"
 import { Card, Rating } from "flowbite-react"
 import { UserIcon } from "@heroicons/react/24/solid"
 import Carousel from "./Carousel"
 import VoiceNote from "./VoiceNote"
+import type { getListings } from "~/models/listing.server"
+import Status from "../atoms/Status"
+import clsx from "clsx"
 
 interface ListingCardProps {
-  listing: Listing & {
-    _count: {
-      reviews: number
-    }
-    avg: number
-  }
+  listing: Awaited<ReturnType<typeof getListings>>[0]
   onClick?: () => void
   onPlay?: () => void
   playing?: boolean
@@ -25,6 +22,7 @@ export default function ListingCard({
     thumbnails,
     location,
     avg,
+    provider: { status },
   },
   onClick,
   onPlay,
@@ -48,26 +46,31 @@ export default function ListingCard({
             </div>
           )}
         </div>
-        <div className="relative m-3 space-y-1">
+        <div className="relative p-3 space-y-1">
           {voiceNoteUrl && (
-            <div className="absolute right-0">
-              <VoiceNote
-                voiceNoteUrl={voiceNoteUrl}
-                onPlay={onPlay}
-                playing={playing}
-              />
-            </div>
+            <VoiceNote
+              className="absolute right-0 top-0"
+              voiceNoteUrl={voiceNoteUrl}
+              onPlay={onPlay}
+              playing={playing}
+            />
           )}
-          <div className="flex text-sm">
-            <Rating>
-              <Rating.Star />
-              <p className="ml-2 font-bold text-gray-900 dark:text-white">
-                {avg.toFixed(2)}
-              </p>
-              <span className="mx-1.5 h-1 w-1 rounded-full bg-gray-500 dark:bg-gray-400" />
-              <span>({reviewsCount ?? "?"})</span>
-            </Rating>
-          </div>
+          <Rating className="flex items-center text-sm">
+            <Rating.Star />
+            <p className="ml-2 font-bold text-gray-900 dark:text-white">
+              {reviewsCount > 0 ? avg.toFixed(2) : "--"}
+            </p>
+            <span
+              className={clsx(
+                "mx-1.5 h-1 w-1 rounded-full bg-gray-500 dark:bg-gray-400",
+                {
+                  "mt-0.5": reviewsCount === 0,
+                }
+              )}
+            />
+            <span>({reviewsCount ?? "?"})</span>
+            {status && <Status status={status} className="ml-2" />}
+          </Rating>
           <span className="text-xs">{location}</span>
           <h3 className="truncate text-lg font-bold">{username}</h3>
           <p className="truncate text-sm">{description}</p>

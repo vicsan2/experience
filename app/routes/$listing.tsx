@@ -35,20 +35,21 @@ export default function Listing() {
       <section className="flex flex-row space-x-3 space-y-1">
         <div>
           <h1>
-            {username} <span className="text-lg">({pronouns.join("/")})</span>
+            {username}{" "}
+            {pronouns.length > 0 && (
+              <span className="text-lg">({pronouns.join("/")})</span>
+            )}
           </h1>
-          <div className="flex space-y-1 text-sm">
-            <Rating>
-              <Rating.Star />
-              <p className="ml-2 font-bold text-gray-900 dark:text-white">
-                {ratingAvg?.toFixed(2)}
-              </p>
-              <span className="ml-2">({ratingCount ?? "?"})</span>
-              <span className="mx-2 h-1 w-1 rounded-full bg-gray-500 dark:bg-gray-400" />
-            </Rating>
+          <Rating className="flex items-center space-y-1 text-sm">
+            <Rating.Star />
+            <p className="ml-2 font-bold text-gray-900 dark:text-white">
+              {ratingAvg?.toFixed(2) ?? "--"}
+            </p>
+            <span className="ml-2">({ratingCount ?? "?"})</span>
+            <span className="mx-2 h-1 w-1 rounded-full bg-gray-500 dark:bg-gray-400" />
             <strong>{location}</strong>
             <span>{language.join()}</span>
-          </div>
+          </Rating>
         </div>
         {voiceNoteUrl && (
           <VoiceNote voiceNoteUrl={voiceNoteUrl} placement="right" />
@@ -69,7 +70,7 @@ export default function Listing() {
       <section className="rounded-md bg-gray-700 p-6">
         <Rating className="font-bold text-gray-900 dark:text-white">
           <Rating.Star />
-          <p className="ml-2">{ratingAvg?.toFixed(2)}</p>
+          <p className="ml-2">{ratingAvg?.toFixed(2) ?? "--"}</p>
           <span className="mx-2 h-1 w-1 rounded-full bg-gray-500 dark:bg-gray-400" />
           <p>{ratingCount} Reviews</p>
         </Rating>

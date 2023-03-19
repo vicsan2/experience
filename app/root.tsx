@@ -2,7 +2,6 @@ import type { LinksFunction, LoaderArgs, MetaFunction } from "@remix-run/node"
 import { json } from "@remix-run/node"
 import {
   Form,
-  Link,
   Links,
   LiveReload,
   Meta,
@@ -50,7 +49,7 @@ export default function App() {
         {typeof window !== "undefined" ? (
           <Flowbite theme={{ theme }}>
             <Navbar fluid className="z-50">
-              <Link to="/" prefetch="intent">
+              <NavLink to="/" prefetch="intent">
                 <Navbar.Brand>
                   <img
                     src="https://flowbite.com/docs/images/logo.svg"
@@ -61,7 +60,7 @@ export default function App() {
                     Experience
                   </span>
                 </Navbar.Brand>
-              </Link>
+              </NavLink>
               <div className="flex gap-2 md:order-2">
                 {user ? (
                   <Dropdown
