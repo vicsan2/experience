@@ -51,6 +51,8 @@ export default function Carousel({
     >
       {loadedPhotos.map((photo, i) => (
         <img
+          width="200"
+          height="200"
           onClick={imgOnlick}
           key={`${photo}-${i}`}
           src={photo}

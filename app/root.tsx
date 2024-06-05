@@ -17,6 +17,7 @@ import tailwindStylesheetUrl from "./styles/tailwind.css"
 import globalStylesheetUrl from "./styles/global.css"
 import theme from "./theme"
 import { useOptionalUser } from "./utils"
+import clsx from "clsx"
 
 export const links: LinksFunction = () => {
   return [
@@ -45,7 +46,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="flex h-screen flex-col bg-gray-900 dark:text-white">
+      <body className="flex flex-col h-screen bg-gray-900 dark:text-white">
         {typeof window !== "undefined" ? (
           <Flowbite theme={{ theme }}>
             <Navbar fluid className="z-50">
@@ -53,10 +54,10 @@ export default function App() {
                 <Navbar.Brand>
                   <img
                     src="https://flowbite.com/docs/images/logo.svg"
-                    className="mr-3 h-6 sm:h-9"
+                    className="w-6 h-6 mr-3 sm:h-9 sm:w-9"
                     alt="Flowbite Logo"
                   />
-                  <span className="self-center whitespace-nowrap text-xl font-semibold">
+                  <span className="self-center text-xl font-semibold whitespace-nowrap">
                     Experience
                   </span>
                 </Navbar.Brand>
@@ -69,9 +70,25 @@ export default function App() {
                     label={<Avatar alt="User settings" rounded />}
                   >
                     <Dropdown.Header>{user.username}</Dropdown.Header>
+                    {user.provider && (
+                      <Dropdown.Item>
+                        <NavLink to={user.username} prefetch="intent">
+                          {({ isActive }) => (
+                            <button
+                              name="profile"
+                              className={clsx({ "text-white": isActive })}
+                            >
+                              Listing
+                            </button>
+                          )}
+                        </NavLink>
+                      </Dropdown.Item>
+                    )}
                     <Dropdown.Item>
                       <Form action="/logout" method="post">
-                        <button type="submit">Logout</button>
+                        <button name="logout" type="submit">
+                          Logout
+                        </button>
                       </Form>
                     </Dropdown.Item>
                   </Dropdown>
@@ -85,7 +102,7 @@ export default function App() {
                     </NavLink>
                   </>
                 )}
-                <Navbar.Toggle />
+                {/* <Navbar.Toggle /> */}
               </div>
               {/* <Navbar.Collapse>
                 <Navbar.Link href="/" active={location.pathname === "/"}>
@@ -93,7 +110,7 @@ export default function App() {
                 </Navbar.Link>
               </Navbar.Collapse> */}
             </Navbar>
-            <main className="w-100 overflow-y-auto p-6">
+            <main className="p-6 overflow-y-auto w-100">
               <Outlet />
             </main>
           </Flowbite>

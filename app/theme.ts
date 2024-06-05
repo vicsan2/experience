@@ -3,7 +3,7 @@ import type { CustomFlowbiteTheme } from "flowbite-react"
 export const theme: CustomFlowbiteTheme = {
   card: {
     root: {
-      children: "",
+      children: "bg-gray-900 rounded-lg",
     },
   },
   carousel: {

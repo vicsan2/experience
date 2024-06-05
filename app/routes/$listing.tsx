@@ -5,12 +5,17 @@ import { redirect } from "@remix-run/server-runtime"
 import { Rating } from "flowbite-react"
 import { Carousel, VoiceNote } from "~/components"
 import { getListingByUsername } from "~/models/listing.server"
+import { getUser } from "~/session.server"
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ params, request }: LoaderArgs) {
   const { listing: providerUsername } = params
   if (!providerUsername) return redirect("/")
   const { listing, reviews } = await getListingByUsername(providerUsername)
-  if (!listing) return redirect("/")
+  if (!listing) {
+    if ((await getUser(request))?.username === providerUsername)
+      return redirect("/listing")
+    return redirect("/")
+  }
   const { name: _name, ...listingWithoutName } = listing
   const listingWithReviews = {
     ...listingWithoutName,
@@ -29,6 +34,7 @@ export default function Listing() {
     pronouns,
     language,
     voiceNoteUrl,
+    description,
   } = useLoaderData<typeof loader>()
   return (
     <div className="space-y-6">
@@ -52,7 +58,12 @@ export default function Listing() {
           </Rating>
         </div>
         {voiceNoteUrl && (
-          <VoiceNote voiceNoteUrl={voiceNoteUrl} placement="right" />
+          <VoiceNote
+            className="h-9 w-16"
+            voiceNoteUrl={voiceNoteUrl}
+            placement="right"
+            rounded
+          />
         )}
       </section>
       <section className="mx-auto h-[450px] overflow-hidden rounded-md">
@@ -62,12 +73,13 @@ export default function Listing() {
           theme={{
             // @ts-ignore
             item: {
-              base: "h-full w-full object-contain bg-gray-700",
+              base: "h-full w-full object-contain bg-gray-800",
             },
           }}
         />
       </section>
-      <section className="rounded-md bg-gray-700 p-6">
+      <section className="p-3 text-center">{description}</section>
+      <section className="rounded-md bg-gray-800 p-6">
         <Rating className="font-bold text-gray-900 dark:text-white">
           <Rating.Star />
           <p className="ml-2">{ratingAvg?.toFixed(2) ?? "--"}</p>

@@ -12,6 +12,7 @@ interface VoiceNoteProps {
   placement?: TooltipProps["placement"]
   playing?: boolean
   className?: ClassValue | ClassValue[]
+  rounded?: boolean
 }
 
 export default function VoiceNote({
@@ -20,6 +21,7 @@ export default function VoiceNote({
   onPlay,
   placement,
   playing,
+  rounded,
 }: VoiceNoteProps) {
   const [audio, state, controls] = useAudio({
     src: voiceNoteUrl ?? "",
@@ -52,14 +54,17 @@ export default function VoiceNote({
           else togglePlay()
         }}
         className={clsx(
-          "rounded-bl-xl w-12 bg-gray-100 p-2",
+          "bg-gray-600 p-2",
+          {
+            "rounded-full": rounded,
+          },
           ...clsxInput(className)
         )}
       >
         {state.playing ? (
-          <PauseIcon className="h-5 w-5 mx-auto text-blue-100" />
+          <PauseIcon className="mx-auto h-5 w-5 text-blue-300" />
         ) : (
-          <PlayIcon className="h-5 w-5 mx-auto text-blue-100" />
+          <PlayIcon className="mx-auto h-5 w-5 text-blue-300" />
         )}
         {audio}
       </button>

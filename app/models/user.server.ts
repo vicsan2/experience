@@ -22,7 +22,13 @@ export interface LoginFields {
 }
 
 export async function getUserById(id: User["id"]) {
-  return prisma.user.findUnique({ where: { id } })
+  return prisma.user.findUnique({
+    where: { id },
+    include: {
+      provider: true,
+      client: true,
+    },
+  })
 }
 
 export async function getUserByUserName(username: User["username"]) {
@@ -122,7 +128,6 @@ export async function createProvider({
 export async function deleteUserByUserName(username: User["username"]) {
   return prisma.user.delete({ where: { username } })
 }
-
 
 export async function verifyLogin({
   email,

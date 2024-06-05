@@ -29,19 +29,20 @@ export default function ListingCard({
   playing,
 }: ListingCardProps) {
   return (
-    <div className="max-w-[204px] select-none" onClick={onClick}>
+    <div className="max-w-[200px] select-none" onClick={onClick}>
       <Card className="cursor-pointer">
-        <div className="relative h-48 overflow-hidden rounded-t-lg">
+        <div className="relative h-48 overflow-hidden bg-gray-800 rounded-t-lg">
           {thumbnails?.length > 0 ? (
             <Carousel
               onClick={(event) => event.stopPropagation()}
+              altText={username}
               imgOnlick={onClick}
               slide={false}
               indicators={false}
               photos={thumbnails}
             />
           ) : (
-            <div className="absolute -bottom-6 flex w-full justify-center">
+            <div className="absolute flex justify-center w-full -bottom-6">
               <UserIcon className="h-36 w-36" />
             </div>
           )}
@@ -49,7 +50,7 @@ export default function ListingCard({
         <div className="relative p-3 space-y-1">
           {voiceNoteUrl && (
             <VoiceNote
-              className="absolute right-0 top-0"
+              className="absolute top-0 right-0 w-12 rounded-bl-xl"
               voiceNoteUrl={voiceNoteUrl}
               onPlay={onPlay}
               playing={playing}
@@ -71,9 +72,9 @@ export default function ListingCard({
             <span>({reviewsCount ?? "?"})</span>
             {status && <Status status={status} className="ml-2" />}
           </Rating>
-          <span className="text-xs">{location}</span>
-          <h3 className="truncate text-lg font-bold">{username}</h3>
-          <p className="truncate text-sm">{description}</p>
+          <p className="text-xs truncate">{location}</p>
+          <h3 className="text-lg font-bold truncate">{username}</h3>
+          <p className="text-sm truncate">{description}</p>
         </div>
       </Card>
     </div>

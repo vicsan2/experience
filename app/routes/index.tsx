@@ -26,7 +26,7 @@ export default function Index() {
   }
 
   return (
-    <section className="container mx-auto grid max-w-fit grid-flow-row grid-cols-2 gap-9 pt-9 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+    <section className="container grid grid-flow-row grid-cols-2 mx-auto max-w-fit gap-9 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       {listings?.map((listing, i) => (
         <ListingCard
           key={listing.id}

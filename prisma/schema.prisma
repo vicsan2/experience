@@ -102,12 +102,19 @@ model Password {
   userId String @unique
 }
 
+enum Gender {
+  male
+  female
+  nonBinary
+  trans
+}
+
 model Listing {
   id          String   @id @default(cuid())
   name        String
   description String
   age         Int
-  gender      String
+  gender      Gender
   pronouns    String[]
   photos      String[]
   thumbnails  String[]
@@ -118,7 +125,7 @@ model Listing {
   providerId String   @unique
   username   String   @unique
 
-  reviews     Review[]
+  reviews Review[]
 
   voiceNote    VoiceNote? @relation(fields: [voiceNoteUrl], references: [url], onDelete: Cascade, onUpdate: Cascade)
   voiceNoteUrl String?    @unique
