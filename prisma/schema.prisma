@@ -21,48 +21,56 @@ model User {
   dateOfBirth       String?
   verified          Boolean   @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  provider       Provider?
+  client         Client?
+  password       Password?
+  blockList      User[]    @relation("blockList")
+  blockedBy      User[]    @relation("blockList")
+  userRole       UserRole
+  providerUserId String?
+  clientUserId   String?
 
-  provider  Provider? @relation("provider")
-  client    Client?   @relation("client")
-  password  Password?
-  blockList User[]    @relation("blockList")
-  blockedBy User[]    @relation("blockList")
-  userRole  UserRole
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+}
 
-  @@unique([id, username])
+enum Status {
+  ACTIVE
+  INACTIVE
+  BANNED
 }
 
 model Provider {
+  id      String   @id @default(cuid())
   visible Boolean  @default(false)
-  status  String   @default("online")
+  status  Status?
   service String[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
 
   listing   Listing?
   voiceNote VoiceNote[]
-  tags      Tag[]       @relation("providerTags")
+  tags      Tag[]
+  Review    Review[]
 
-  user     User     @relation("provider", fields: [userId, username], references: [id, username], onDelete: Cascade, onUpdate: Cascade)
-  userId   String   @id @unique
-  username String   @unique
-  Review   Review[]
-
-  @@unique([userId, username])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
 }
 
 model Client {
-  user     User   @relation("client", fields: [userId, username], references: [id, username], onDelete: Cascade, onUpdate: Cascade)
-  userId   String @id @unique
-  username String @unique
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
 
-  tags    Tag[]    @relation("clientTags")
+  tags    Tag[]
   reviews Review[]
 
-  @@unique([userId, username])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
 }
 
 model Review {
@@ -71,28 +79,31 @@ model Review {
   comment   String?
   voiceNote String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  providerId String
 
-  provider         Provider @relation(fields: [providerId, providerUsername], references: [userId, username], onDelete: Cascade, onUpdate: Cascade)
-  providerId       String
-  providerUsername String
-
-  reviewer                 Client @relation(fields: [reviewerId, reviewerUsername], references: [userId, username], onDelete: Cascade, onUpdate: Cascade)
+  reviewer                 Client @relation(fields: [reviewerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   reviewerId               String
-  reviewerUsername         String
   censoredReviewerUsername String
 
   listing   Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   listingId String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
 }
 
 model Tag {
   id  String @id @default(cuid())
   tag String @unique
 
-  clients   Client[]   @relation("clientTags")
-  providers Provider[] @relation("providerTags")
+  clients   Client[]
+  providers Provider[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
 }
 
 model Password {
@@ -100,13 +111,17 @@ model Password {
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String @unique
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
 }
 
 enum Gender {
-  male
-  female
-  nonBinary
-  trans
+  MALE
+  FEMALE
+  NON_BINARY
+  TRANS
 }
 
 model Listing {
@@ -114,35 +129,36 @@ model Listing {
   name        String
   description String
   age         Int
-  gender      Gender
+  gender      Gender?
   pronouns    String[]
   photos      String[]
   thumbnails  String[]
   language    String[]
   location    String
 
-  provider   Provider @relation(fields: [providerId, username], references: [userId, username], onDelete: Cascade, onUpdate: Cascade)
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   providerId String   @unique
-  username   String   @unique
 
   reviews Review[]
 
-  voiceNote    VoiceNote? @relation(fields: [voiceNoteUrl], references: [url], onDelete: Cascade, onUpdate: Cascade)
-  voiceNoteUrl String?    @unique
+  voiceNote   VoiceNote? @relation(fields: [voiceNoteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  voiceNoteId String?    @unique
 
-  @@unique([providerId, username])
-  @@unique([id, providerId])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
 }
 
 model VoiceNote {
   id  String @id @default(cuid())
   url String @unique
 
-  provider   Provider @relation(fields: [providerId, username], references: [userId, username], onDelete: Cascade, onUpdate: Cascade)
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   providerId String   @unique
-  username   String   @unique
 
   Listing Listing?
 
-  @@unique([providerId, username])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
 }

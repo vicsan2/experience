@@ -10,14 +10,14 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react"
+import clsx from "clsx"
 import { Avatar, Button, Dropdown, Flowbite, Navbar } from "flowbite-react"
 
 import { getUser } from "./session.server"
-import tailwindStylesheetUrl from "./styles/tailwind.css"
 import globalStylesheetUrl from "./styles/global.css"
+import tailwindStylesheetUrl from "./styles/tailwind.css"
 import theme from "./theme"
 import { useOptionalUser } from "./utils"
-import clsx from "clsx"
 
 export const links: LinksFunction = () => {
   return [

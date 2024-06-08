@@ -1,10 +1,15 @@
-import { Card, Rating } from "flowbite-react"
 import { UserIcon } from "@heroicons/react/24/solid"
+import clsx from "clsx"
+import { Card, Rating } from "flowbite-react"
+
+import Status from "../atoms/Status"
+
 import Carousel from "./Carousel"
 import VoiceNote from "./VoiceNote"
+
 import type { getListings } from "~/models/listing.server"
-import Status from "../atoms/Status"
-import clsx from "clsx"
+
+
 
 interface ListingCardProps {
   listing: Awaited<ReturnType<typeof getListings>>[0]
@@ -15,10 +20,10 @@ interface ListingCardProps {
 
 export default function ListingCard({
   listing: {
-    username,
+    provider: { user: { username } },
     description,
     _count: { reviews: reviewsCount },
-    voiceNoteUrl,
+    voiceNote,
     thumbnails,
     location,
     avg,
@@ -48,10 +53,10 @@ export default function ListingCard({
           )}
         </div>
         <div className="relative p-3 space-y-1">
-          {voiceNoteUrl && (
+          {voiceNote && (
             <VoiceNote
               className="absolute top-0 right-0 w-12 rounded-bl-xl"
-              voiceNoteUrl={voiceNoteUrl}
+              voiceNoteUrl={voiceNote.url}
               onPlay={onPlay}
               playing={playing}
             />

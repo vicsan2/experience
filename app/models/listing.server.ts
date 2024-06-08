@@ -1,6 +1,8 @@
-import type { Listing, Provider } from "@prisma/client"
-import { prisma } from "~/db.server"
+import type { Listing, Provider, User } from "@prisma/client"
+
 import { getAggregatedReviewsByUsername } from "./reviews.server"
+
+import { prisma } from "~/db.server"
 
 export async function getListingByProviderId(userId: Provider["userId"]) {
   return prisma.listing.findUnique({
@@ -8,28 +10,53 @@ export async function getListingByProviderId(userId: Provider["userId"]) {
   })
 }
 
-export async function getListingByUsername(username: Listing["username"]) {
+export async function getListingByUsername(username: User["username"]) {
   const reviews = await getAggregatedReviewsByUsername(username)
-  const listing = await prisma.listing.findUnique({
-    where: { username },
-  })
+  const listing = await prisma.listing.findFirst(
+    {
+      where: {
+        provider: {
+          user: {
+            username
+          }
+        }
+      },
+      include: {
+        voiceNote: {
+          select: {
+            url: true,
+          },
+        },
+        provider: {
+          select: {
+            status: true,
+            user: {
+              select: {
+                username: true,
+              },
+            },
+          },
+        },
+      },
+    }
+  )
 
   return { listing, reviews }
 }
 
-export async function editListingByUsername(
-  username: Listing["username"],
+export async function editListingById(
+  id: Listing["id"],
   data: Listing
 ) {
   return prisma.listing.update({
-    where: { username },
+    where: { id },
     data,
   })
 }
 
-export async function deleteListingByUsername(username: Listing["username"]) {
+export async function deleteListingById(id: Listing["id"]) {
   return prisma.listing.delete({
-    where: { username },
+    where: { id },
   })
 }
 
@@ -50,6 +77,16 @@ export async function getListings() {
       provider: {
         select: {
           status: true,
+          user: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      },
+      voiceNote: {
+        select: {
+          url: true,
         },
       },
     },

@@ -2,11 +2,13 @@ import { useLoaderData, useSearchParams } from "@remix-run/react"
 import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/server-runtime"
 import { redirect } from "@remix-run/server-runtime"
-import { Avatar, Rating, Pagination } from "flowbite-react"
+import { Avatar, Pagination, Rating } from "flowbite-react"
+
+import type { loader as listingLoader } from "../$listing"
+
 import { readableDate } from "~/helpers/client"
 import { getReviewsByUsername } from "~/models/reviews.server"
 import { useMatchesData } from "~/utils"
-import type { loader as listingLoader } from "../$listing"
 
 export async function loader({ params, request }: LoaderArgs) {
   const { listing: providerUsername } = params

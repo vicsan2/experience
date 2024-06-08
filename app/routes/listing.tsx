@@ -6,12 +6,13 @@ import type {
   ValidationResult,
 } from "remix-validated-form"
 import { ValidatedForm } from "remix-validated-form"
+
 import {
   FileField,
   FormButton,
   SelectField,
-  TextareaField,
   TextField,
+  TextareaField,
 } from "~/components"
 import { getListingByProviderId } from "~/models/listing.server"
 import { getUser } from "~/session.server"
@@ -33,7 +34,7 @@ export async function loader({ request }: LoaderArgs) {
 export default function CreateListing() {
   return (
     <ValidatedForm
-      className="mx-auto grid max-w-2xl grid-cols-1 gap-6 sm:grid-cols-2"
+      className="grid max-w-2xl grid-cols-1 gap-6 mx-auto sm:grid-cols-2"
       method="post"
       validator={{
         validate: function (

@@ -1,9 +1,10 @@
 import { useMatches } from "@remix-run/react"
+import type { AppData, SerializeFrom } from "@remix-run/server-runtime"
 import { useMemo } from "react"
+
 import type { loader as rootLoader } from "./root"
 
 import type { User } from "~/models/user.server"
-import type { AppData, SerializeFrom } from "@remix-run/server-runtime"
 
 const DEFAULT_REDIRECT = "/"
 

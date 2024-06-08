@@ -1,7 +1,9 @@
+import { randomInt } from "crypto"
+
+import { faker } from "@faker-js/faker"
 import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcryptjs"
-import { faker } from "@faker-js/faker"
-import { randomInt } from "crypto"
+
 import { censorUsername } from "~/helpers/server"
 
 const prisma = new PrismaClient()

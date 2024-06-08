@@ -2,6 +2,7 @@ import { useLoaderData, useNavigate } from "@remix-run/react"
 import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/server-runtime"
 import { useState } from "react"
+
 import { ListingCard } from "~/components"
 import { getListings } from "~/models/listing.server"
 
@@ -31,7 +32,7 @@ export default function Index() {
         <ListingCard
           key={listing.id}
           listing={listing}
-          onClick={() => navigate(`/${listing.username}?page=1`)}
+          onClick={() => navigate(`/${listing.provider.user.username}?page=1`)}
           onPlay={() => handlePlay(i)}
           playing={playing === i ? true : false}
         />
