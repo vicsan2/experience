@@ -2,6 +2,7 @@ import { useLoaderData, useNavigate } from "@remix-run/react"
 import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/server-runtime"
 import { useState } from "react"
+
 import { ListingCard } from "~/components"
 import { getListings } from "~/models/listing.server"
 
@@ -26,14 +27,14 @@ export default function Index() {
   }
 
   return (
-    <section className="container mx-auto grid max-w-fit grid-flow-row grid-cols-2 gap-9 pt-9 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+    <section className="container grid grid-flow-row grid-cols-2 mx-auto max-w-fit gap-9 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       {listings?.map((listing, i) => (
         <ListingCard
           key={listing.id}
           listing={listing}
-          onClick={() => navigate(`/${listing.username}`)}
+          onClick={() => navigate(`/${listing.provider.user.username}?page=1`)}
           onPlay={() => handlePlay(i)}
-          playing={playing === i ? true : undefined}
+          playing={playing === i ? true : false}
         />
       ))}
     </section>

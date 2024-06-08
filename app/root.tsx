@@ -9,13 +9,13 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLocation,
 } from "@remix-run/react"
+import clsx from "clsx"
 import { Avatar, Button, Dropdown, Flowbite, Navbar } from "flowbite-react"
 
 import { getUser } from "./session.server"
-import tailwindStylesheetUrl from "./styles/tailwind.css"
 import globalStylesheetUrl from "./styles/global.css"
+import tailwindStylesheetUrl from "./styles/tailwind.css"
 import theme from "./theme"
 import { useOptionalUser } from "./utils"
 
@@ -40,27 +40,28 @@ export async function loader({ request }: LoaderArgs) {
 
 export default function App() {
   const user = useOptionalUser()
-  const { pathname } = useLocation()
   return (
     <html lang="en" className="h-full overflow-x-hidden">
       <head>
         <Meta />
         <Links />
       </head>
-      <body className="flex h-screen flex-col bg-gray-900 dark:text-white">
+      <body className="flex flex-col h-screen bg-gray-900 dark:text-white">
         {typeof window !== "undefined" ? (
           <Flowbite theme={{ theme }}>
             <Navbar fluid className="z-50">
-              <Navbar.Brand href="/">
-                <img
-                  src="https://flowbite.com/docs/images/logo.svg"
-                  className="mr-3 h-6 sm:h-9"
-                  alt="Flowbite Logo"
-                />
-                <span className="self-center whitespace-nowrap text-xl font-semibold">
-                  Experience
-                </span>
-              </Navbar.Brand>
+              <NavLink to="/" prefetch="intent">
+                <Navbar.Brand>
+                  <img
+                    src="https://flowbite.com/docs/images/logo.svg"
+                    className="w-6 h-6 mr-3 sm:h-9 sm:w-9"
+                    alt="Flowbite Logo"
+                  />
+                  <span className="self-center text-xl font-semibold whitespace-nowrap">
+                    Experience
+                  </span>
+                </Navbar.Brand>
+              </NavLink>
               <div className="flex gap-2 md:order-2">
                 {user ? (
                   <Dropdown
@@ -69,27 +70,39 @@ export default function App() {
                     label={<Avatar alt="User settings" rounded />}
                   >
                     <Dropdown.Header>{user.username}</Dropdown.Header>
+                    {user.provider && (
+                      <Dropdown.Item>
+                        <NavLink to={user.username} prefetch="intent">
+                          {({ isActive }) => (
+                            <button
+                              name="profile"
+                              className={clsx({ "text-white": isActive })}
+                            >
+                              Listing
+                            </button>
+                          )}
+                        </NavLink>
+                      </Dropdown.Item>
+                    )}
                     <Dropdown.Item>
                       <Form action="/logout" method="post">
-                        <button type="submit">Logout</button>
+                        <button name="logout" type="submit">
+                          Logout
+                        </button>
                       </Form>
                     </Dropdown.Item>
                   </Dropdown>
                 ) : (
                   <>
-                    {!pathname.startsWith("/login") && (
-                      <NavLink to="/login">
-                        <Button>Login</Button>
-                      </NavLink>
-                    )}
-                    {!pathname.startsWith("/signup") && (
-                      <NavLink to="/signup">
-                        <Button>Sign Up</Button>
-                      </NavLink>
-                    )}
+                    <NavLink to="login" prefetch="intent">
+                      {({ isActive }) => !isActive && <Button>Login</Button>}
+                    </NavLink>
+                    <NavLink to="signup" prefetch="intent">
+                      {({ isActive }) => !isActive && <Button>Sign Up</Button>}
+                    </NavLink>
                   </>
                 )}
-                <Navbar.Toggle />
+                {/* <Navbar.Toggle /> */}
               </div>
               {/* <Navbar.Collapse>
                 <Navbar.Link href="/" active={location.pathname === "/"}>
@@ -97,7 +110,7 @@ export default function App() {
                 </Navbar.Link>
               </Navbar.Collapse> */}
             </Navbar>
-            <main className="w-100 overflow-y-auto p-6">
+            <main className="p-6 overflow-y-auto w-100">
               <Outlet />
             </main>
           </Flowbite>

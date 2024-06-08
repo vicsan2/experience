@@ -1,15 +1,15 @@
-import type { TextInputProps } from "flowbite-react"
-import { TextInput } from "flowbite-react"
+import type { FileInputProps } from "flowbite-react"
+import { FileInput } from "flowbite-react"
 import { useField } from "remix-validated-form"
 
 import Field from "../atoms/Field"
 
-interface TextFieldProps extends TextInputProps {
+interface TextFieldProps extends FileInputProps {
   label: string
   name: string
 }
 
-export default function TextField({
+export default function PhotosField({
   name,
   label,
   helperText,
@@ -19,7 +19,7 @@ export default function TextField({
   const { error, getInputProps } = useField(name)
   return (
     <Field className={className} name={name} label={label} error={error}>
-      <TextInput
+      <FileInput
         name={name}
         color={error ? "failure" : undefined}
         helperText={error ?? helperText}

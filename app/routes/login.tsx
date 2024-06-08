@@ -1,11 +1,12 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime"
 import { json, redirect } from "@remix-run/server-runtime"
-import { useField, ValidatedForm } from "remix-validated-form"
-import { Container, FormButton, Paper, TextField } from "~/components"
-import { loginSchema } from "~/schemas/login"
+import { ValidatedForm, useField } from "remix-validated-form"
 import { validationError } from "remix-validated-form"
+
+import { Container, FormButton, Paper, TextField } from "~/components"
 import type { LoginFields } from "~/models/user.server"
 import { verifyLogin } from "~/models/user.server"
+import { loginSchema } from "~/schemas/login"
 import { createUserSession, getUserId } from "~/session.server"
 
 export async function loader({ request }: LoaderArgs) {
@@ -40,7 +41,7 @@ export default function Login() {
       <Paper>
         <ValidatedForm
           id="login-form"
-          className="w-full space-y-6 p-12"
+          className="w-full p-12 space-y-6"
           validator={loginSchema}
           method="post"
         >
