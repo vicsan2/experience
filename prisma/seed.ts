@@ -155,7 +155,7 @@ async function seed() {
     const photoIds = [randomInt(400), randomInt(400), randomInt(400)]
 
     if (i === 0) {
-      prisma.listing.create({
+      await prisma.listing.create({
         data: {
           name: name,
           description: faker.random.words(4),
