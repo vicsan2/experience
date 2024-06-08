@@ -3,6 +3,7 @@ import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/server-runtime"
 import { redirect } from "@remix-run/server-runtime"
 import { Rating } from "flowbite-react"
+
 import { Carousel, VoiceNote } from "~/components"
 import { getListingByUsername } from "~/models/listing.server"
 import { getUser } from "~/session.server"
@@ -26,14 +27,14 @@ export async function loader({ params, request }: LoaderArgs) {
 
 export default function Listing() {
   const {
-    username,
+    provider: { user: { username } },
     _count: { rating: ratingCount },
     _avg: { rating: ratingAvg },
     location,
     photos,
     pronouns,
     language,
-    voiceNoteUrl,
+    voiceNote,
     description,
   } = useLoaderData<typeof loader>()
   return (
@@ -52,15 +53,15 @@ export default function Listing() {
               {ratingAvg?.toFixed(2) ?? "--"}
             </p>
             <span className="ml-2">({ratingCount ?? "?"})</span>
-            <span className="mx-2 h-1 w-1 rounded-full bg-gray-500 dark:bg-gray-400" />
+            <span className="w-1 h-1 mx-2 bg-gray-500 rounded-full dark:bg-gray-400" />
             <strong>{location}</strong>
             <span>{language.join()}</span>
           </Rating>
         </div>
-        {voiceNoteUrl && (
+        {voiceNote && (
           <VoiceNote
-            className="h-9 w-16"
-            voiceNoteUrl={voiceNoteUrl}
+            className="w-16 h-9"
+            voiceNoteUrl={voiceNote.url}
             placement="right"
             rounded
           />
@@ -79,11 +80,11 @@ export default function Listing() {
         />
       </section>
       <section className="p-3 text-center">{description}</section>
-      <section className="rounded-md bg-gray-800 p-6">
+      <section className="p-6 bg-gray-800 rounded-md">
         <Rating className="font-bold text-gray-900 dark:text-white">
           <Rating.Star />
           <p className="ml-2">{ratingAvg?.toFixed(2) ?? "--"}</p>
-          <span className="mx-2 h-1 w-1 rounded-full bg-gray-500 dark:bg-gray-400" />
+          <span className="w-1 h-1 mx-2 bg-gray-500 rounded-full dark:bg-gray-400" />
           <p>{ratingCount} Reviews</p>
         </Rating>
         <hr className="mt-3 mb-3 bg-gray-600" />

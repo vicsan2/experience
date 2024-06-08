@@ -8,11 +8,22 @@ module.exports = {
   ],
   rules: {
     semi: [2, "never"],
+    "import/order": [
+      "error",
+      {
+        alphabetize: {
+          order: "asc",
+          caseInsensitive: true,
+        },
+        distinctGroup: true,
+        "newlines-between": "always",
+      },
+    ],
   },
   env: {
     "cypress/globals": true,
   },
-  plugins: ["cypress"],
+  plugins: ["cypress", "eslint-plugin-import"],
   // We're using vitest which has a very similar API to jest
   // (so the linting plugins work nicely), but we have to
   // set the jest version explicitly.

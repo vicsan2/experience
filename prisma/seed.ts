@@ -1,7 +1,9 @@
+import { randomInt } from "crypto"
+
+import { faker } from "@faker-js/faker"
 import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcryptjs"
-import { faker } from "@faker-js/faker"
-import { randomInt } from "crypto"
+
 import { censorUsername } from "~/helpers/server"
 
 const prisma = new PrismaClient()
@@ -11,10 +13,10 @@ async function seed() {
   const username2 = "vicsan2"
   const tagTag = "LGBTQ+"
   // cleanup the existing database
-  await prisma.user.deleteMany().catch(() => {})
-  await prisma.tag.deleteMany().catch(() => {})
-  await prisma.listing.deleteMany().catch(() => {})
-  await prisma.voiceNote.deleteMany().catch(() => {})
+  await prisma.user.deleteMany().catch(() => { })
+  await prisma.tag.deleteMany().catch(() => { })
+  await prisma.listing.deleteMany().catch(() => { })
+  await prisma.voiceNote.deleteMany().catch(() => { })
 
   const hashedPassword = await bcrypt.hash("password", 10)
 
@@ -153,14 +155,6 @@ async function seed() {
     const photoIds = [randomInt(400), randomInt(400), randomInt(400)]
 
     if (i === 0) {
-      const voiceNote = await prisma.voiceNote.create({
-        data: {
-          providerId: provider.userId,
-          url: "https://cdn.videvo.net/videvo_files/audio/premium/audio0160/watermarked/SexMoanFemaleLong_preview.mp3",
-          username: provider.username,
-        },
-      })
-
       prisma.listing.create({
         data: {
           name: name,
@@ -171,7 +165,6 @@ async function seed() {
           location: `${faker.address.city()}, ${faker.address.stateAbbr()}, ${faker.address.countryCode()}`,
           providerId: provider.userId,
           username: provider.username,
-          voiceNoteUrl: voiceNote.url,
           photos: photoIds.map((id) => `https://picsum.photos/id/${id}/1000`),
           thumbnails: photoIds.map(
             (id) => `https://picsum.photos/id/${id}/200`

@@ -1,9 +1,9 @@
-import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json, redirect } from "@remix-run/node"
-
-import { getUserId } from "~/session.server"
 import { Outlet } from "@remix-run/react"
+import type { LoaderArgs } from "@remix-run/server-runtime"
+
 import { Container, Paper } from "~/components"
+import { getUserId } from "~/session.server"
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request)
